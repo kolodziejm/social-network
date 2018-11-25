@@ -8,6 +8,8 @@ const User = require('../../models/User');
 
 // validation functions
 const validateProfileInput = require('../../validation/profile');
+const validateExperienceInput = require('../../validation/experience');
+const validateEducationInput = require('../../validation/education');
 
 const router = express.Router();
 
@@ -152,5 +154,103 @@ router.post('/', passport.authenticate('jwt', { session: false }), async (req, r
   }
 
 })
+
+// @route POST api/profile/experience
+// @desc Add experience to profile
+// @access Private
+router.post('/experience', passport.authenticate('jwt', { session: false }), async (req, res, next) => {
+  const { errors, isValid } = validateExperienceInput(req.body);
+  if (!isValid) {
+    return res.status(400).json(errors);
+  }
+
+  const profile = await Profile.findOne({ user: req.user.id });
+  const newExp = { // new experience object
+    title: req.body.title,
+    company: req.body.company,
+    location: req.body.location,
+    from: req.body.from,
+    to: req.body.to,
+    current: req.body.current,
+    description: req.body.description
+  }
+  // add to profile's experience array
+  profile.experience.unshift(newExp); // nie push, bo push dodaje na koniec tablicy, unshift dodaje na poczatek (most recent)
+
+  await profile.save();
+  res.json(profile);
+})
+
+// @route POST api/profile/education
+// @desc Add education to profile
+// @access Private
+router.post('/education', passport.authenticate('jwt', { session: false }), async (req, res, next) => {
+  const { errors, isValid } = validateEducationInput(req.body);
+  if (!isValid) {
+    return res.status(400).json(errors);
+  }
+
+  const profile = await Profile.findOne({ user: req.user.id });
+  const newEdu = { // new experience object
+    school: req.body.school,
+    degree: req.body.degree,
+    fieldofstudy: req.body.fieldofstudy,
+    from: req.body.from,
+    to: req.body.to,
+    current: req.body.current,
+    description: req.body.description
+  }
+  // add to profile's experience array
+  profile.education.unshift(newEdu); // nie push, bo push dodaje na koniec tablicy, unshift dodaje na poczatek (most recent)
+
+  await profile.save();
+  res.json(profile);
+})
+
+// @route DELETE api/profile/experience/:exp_id
+// @desc Delete experience from profile
+// @access Private
+router.delete('/experience/:exp_id', passport.authenticate('jwt', { session: false }), async (req, res, next) => {
+  try {
+    const profile = await Profile.findOne({ user: req.user.id });
+    // Get remove index
+    const removeIndex = profile.experience.map(item => item.id).indexOf(req.params.exp_id);
+    // Delete from the array
+    profile.experience.splice(removeIndex, 1);
+    await profile.save();
+    res.json({ profile });
+  } catch (err) {
+    console.log(err);
+    res.status(404).json(err);
+  }
+})
+
+// @route DELETE api/profile/education/:edu_id
+// @desc Delete education from profile
+// @access Private
+router.delete('/education/:edu_id', passport.authenticate('jwt', { session: false }), async (req, res, next) => {
+  try {
+    const profile = await Profile.findOne({ user: req.user.id });
+    // Get remove index
+    const removeIndex = profile.education.map(item => item.id).indexOf(req.params.edu_id);
+    // Delete from the array
+    profile.education.splice(removeIndex, 1);
+    await profile.save();
+    res.json({ profile });
+  } catch (err) {
+    console.log(err);
+    res.status(404).json(err);
+  }
+})
+
+// @route DELETE api/profile
+// @desc Delete user and profile
+// @access Private
+router.delete('/', passport.authenticate('jwt', { session: false }), async (req, res, next) => {
+  await Profile.findOneAndRemove({ user: req.user.id });
+  await User.findOneAndRemove({ _id: req.user.id });
+  res.json({ success: true });
+})
+
 
 module.exports = router;
