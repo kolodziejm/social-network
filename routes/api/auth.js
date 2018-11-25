@@ -7,6 +7,10 @@ const passport = require('passport');
 
 const secret = require('../../config/keys').secretOrKey;
 
+// INPUT VALIDATION
+const validateRegisterInput = require('../../validation/register');
+const validateLoginInput = require('../../validation/login');
+
 const router = express.Router();
 
 const User = require('../../models/User');
@@ -24,12 +28,18 @@ router.get('/test', (req, res, next) => {
 // @desc Register user
 // @access Public
 router.post('/register', async (req, res, next) => { // function or create and import a controller to handle
+  const { errors, isValid } = validateRegisterInput(req.body);
+  if (!isValid) {
+    return res.status(400).json(errors);
+  }
+
   const { email, name, password } = req.body
   try {
     const user = await User.findOne({ email });
     if (user) {
+      errors.email = 'Email already exists'
       return res.status(400).json({
-        email: 'Email already exists'
+        errors
       })
     } else {
       const avatar = gravatar.url(email, {
@@ -59,12 +69,16 @@ router.post('/register', async (req, res, next) => { // function or create and i
 // @desc Login user / Return JWT token to the client
 // @access Public
 router.post('/login', async (req, res, next) => {
+  const { errors, isValid } = validateLoginInput(req.body);
+  if (!isValid) {
+    return res.status(400).json(errors);
+  }
+
   const { email, password } = req.body;
   const user = await User.findOne({ email });
   if (!user) {
-    return res.status(404).json({
-      email: 'User not found'
-    });
+    errors.email = 'User not found'
+    return res.status(404).json(errors);
   }
   const isMatch = await bcrypt.compare(password, user.password);
   if (isMatch) {
@@ -77,9 +91,8 @@ router.post('/login', async (req, res, next) => {
       })
     });
   } else {
-    res.status(400).json({
-      password: 'Password incorrect'
-    })
+    errors.password = 'Password incorrect'
+    res.status(400).json(errors)
   }
 })
 
