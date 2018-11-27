@@ -1,4 +1,6 @@
 import React, { Component } from 'react'
+import axios from 'axios';
+import classnames from 'classnames';
 
 class Register extends Component {
 
@@ -12,7 +14,7 @@ class Register extends Component {
 
   inputChangedHandler = e => this.setState({ [e.target.name]: e.target.value });
 
-  submitHandler = e => {
+  submitHandler = async e => {
     e.preventDefault();
     const { name, email, password, password2 } = this.state;
     const newUser = {
@@ -21,10 +23,19 @@ class Register extends Component {
       password,
       password2
     }
-    console.log(newUser);
+    try {
+      const result = await axios.post('/api/auth/register', newUser); // path, data to send
+      console.log(result.data);
+    } catch (err) {
+      this.setState({
+        errors: err.response.data
+      })
+    }
   }
 
   render() {
+    const { errors } = this.state;
+
     return (
       <div className="register">
         <div className="container">
@@ -32,19 +43,31 @@ class Register extends Component {
             <div className="col-md-8 m-auto">
               <h1 className="display-4 text-center">Sign Up</h1>
               <p className="lead text-center">Create your DevConnector account</p>
-              <form onSubmit={this.submitHandler}>
+              <form onSubmit={this.submitHandler} noValidate>
                 <div className="form-group">
-                  <input type="text" className="form-control form-control-lg" placeholder="Name" name="name" value={this.state.name} onChange={this.inputChangedHandler} />
+                  <input type="text" className={classnames('form-control form-control-lg', {
+                    'is-invalid': errors.name
+                  })} placeholder="Name" name="name" value={this.state.name} onChange={this.inputChangedHandler} />
+                  {errors.name && (<div className="invalid-feedback">{errors.name}</div>)}
                 </div>
                 <div className="form-group">
-                  <input type="email" className="form-control form-control-lg" placeholder="Email Address" name="email" value={this.state.email} onChange={this.inputChangedHandler} />
+                  <input type="email" className={classnames('form-control form-control-lg', {
+                    'is-invalid': errors.email
+                  })} placeholder="Email Address" name="email" value={this.state.email} onChange={this.inputChangedHandler} />
+                  {errors.email && (<div className="invalid-feedback">{errors.email}</div>)}
                   <small className="form-text text-muted">This site uses Gravatar so if you want a profile image, use a Gravatar email</small>
                 </div>
                 <div className="form-group">
-                  <input type="password" className="form-control form-control-lg" placeholder="Password" name="password" value={this.state.password} onChange={this.inputChangedHandler} />
+                  <input type="password" className={classnames('form-control form-control-lg', {
+                    'is-invalid': errors.password
+                  })} placeholder="Password" name="password" value={this.state.password} onChange={this.inputChangedHandler} />
+                  {errors.password && (<div className="invalid-feedback">{errors.password}</div>)}
                 </div>
                 <div className="form-group">
-                  <input type="password" className="form-control form-control-lg" placeholder="Confirm Password" name="password2" value={this.state.password2} onChange={this.inputChangedHandler} />
+                  <input type="password" className={classnames('form-control form-control-lg', {
+                    'is-invalid': errors.password2
+                  })} placeholder="Confirm Password" name="password2" value={this.state.password2} onChange={this.inputChangedHandler} />
+                  {errors.password2 && (<div className="invalid-feedback">{errors.password2}</div>)}
                 </div>
                 <input type="submit" className="btn btn-info btn-block mt-4" value="Submit" />
               </form>
