@@ -19,6 +19,14 @@ export const registerUser = (userData, history) => {
   }
 }
 
+// Set logged in user with token extracted before dispatching this action
+export const setCurrentUser = decoded => {
+  return {
+    type: SET_CURRENT_USER,
+    payload: decoded
+  }
+}
+
 // Login - Get User Token
 export const loginUser = (userData) => {
   return async dispatch => {
@@ -39,10 +47,11 @@ export const loginUser = (userData) => {
   }
 };
 
-// Set logged in user
-export const setCurrentUser = decoded => {
-  return {
-    type: SET_CURRENT_USER,
-    payload: decoded
+// Logout user
+export const logoutUser = () => {
+  return async dispatch => {
+    localStorage.removeItem('jwtToken');
+    setAuthToken(false); // else statement will delete the custom auto auth header from future requests
+    dispatch(setCurrentUser({})); // authReducer sets the user to the passed argument value, in this case empty object (inAuth default reducer state)
   }
 }

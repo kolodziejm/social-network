@@ -15,6 +15,12 @@ class Register extends Component {
     errors: {}
   }
 
+  componentDidMount() { // Lub render roznych routes w App.js w zaleznosci od isAuthenticated authReducera
+    if (this.props.auth.isAuthenticated) {
+      this.props.history.push('/dashboard');
+    }
+  }
+
   componentWillReceiveProps(nextProps) { // po to zeby brac errory ze state, a nie ze store'a (to alternatywa)
     if (nextProps.errors) {
       this.setState({ errors: nextProps.errors });
