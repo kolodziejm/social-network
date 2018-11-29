@@ -1,5 +1,6 @@
 import axios from 'axios';
 
+// convenience function for not having to set up auth header manually for every request!
 const setAuthToken = token => {
   if (token) {
     // Apply to every request

@@ -1,6 +1,10 @@
 import React, { Component } from 'react';
 import { BrowserRouter, Route } from 'react-router-dom';
 import { Provider } from 'react-redux';
+import jwt_decode from 'jwt-decode';
+
+import setAuthToken from './utils/setAuthToken';
+import { setCurrentUser } from './actions/authActions';
 
 import './App.css';
 
@@ -11,6 +15,13 @@ import Register from './components/auth/Register';
 import Login from './components/auth/Login';
 
 import store from './store';
+
+// TRWALE USTAWIENIE USERA W STORZE, JESLI TOKEN ISTNIEJE. MOZNA W KONSTRUKTORZE KLASY MOIM SPOSOBEM
+if (localStorage.jwtToken) {
+  setAuthToken(localStorage.jwtToken);   // Set auth token header auth
+  const decoded = jwt_decode(localStorage.jwtToken) // decode token to get user info and expiration date
+  store.dispatch(setCurrentUser(decoded)); // set user in the store and isAuth to true
+}
 
 class App extends Component {
   render() {
