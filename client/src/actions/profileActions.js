@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import { GET_PROFILE, PROFILE_LOADING, GET_ERRORS, CLEAR_CURRENT_PROFILE } from '../actions/types';
+import { GET_PROFILE, PROFILE_LOADING, GET_ERRORS, CLEAR_CURRENT_PROFILE, SET_CURRENT_USER } from '../actions/types';
 
 // Profile loading
 export const setProfileLoading = () => {
@@ -32,6 +32,41 @@ export const getCurrentProfile = () => {
         type: GET_PROFILE,
         payload: {}
       });
+    }
+  }
+}
+
+// Create profile
+export const createProfile = (profileData, history) => {
+  return async dispatch => {
+    try {
+      await axios.post('/api/profile', profileData);
+      history.push('/dashboard');
+    } catch (err) {
+      dispatch({ // errorReducer will take care of this action
+        type: GET_ERRORS,
+        payload: err.response.data
+      });
+    }
+  }
+}
+
+// Delete profile (DELETES USER AND PROFILE!)
+export const deleteAccount = () => {
+  return async dispatch => {
+    if (window.confirm('Are you sure? This can NOT be undone!')) {
+      try {
+        await axios.delete('/api/profile');
+        dispatch({
+          type: SET_CURRENT_USER,
+          payload: {}
+        })
+      } catch (err) {
+        dispatch({
+          type: GET_ERRORS,
+          payload: err.response.data
+        })
+      }
     }
   }
 }
