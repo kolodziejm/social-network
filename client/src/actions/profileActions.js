@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import { GET_PROFILE, PROFILE_LOADING, GET_ERRORS, CLEAR_CURRENT_PROFILE, SET_CURRENT_USER } from '../actions/types';
+import { GET_PROFILE, PROFILE_LOADING, GET_ERRORS, CLEAR_CURRENT_PROFILE, SET_CURRENT_USER, GET_PROFILES } from '../actions/types';
 
 // Profile loading
 export const setProfileLoading = () => {
@@ -100,6 +100,43 @@ export const deleteExperience = id => {
   };
 };
 
+// Delete education
+export const deleteEducation = id => {
+  return async dispatch => {
+    try {
+      const res = await axios.delete(`/api/profile/education/${id}`);
+      console.log(res);
+      dispatch({
+        type: GET_PROFILE,
+        payload: res.data.profile
+      })
+    } catch (err) {
+      dispatch({
+        type: GET_ERRORS,
+        payload: err.response.data
+      })
+    }
+  };
+};
+
+// Get all profiles
+export const getProfiles = () => {
+  return async dispatch => {
+    dispatch(setProfileLoading());
+    try {
+      const res = await axios.get('/api/profile/all');
+      dispatch({
+        type: GET_PROFILES,
+        payload: res.data
+      })
+    } catch (err) {
+      dispatch({
+        type: GET_PROFILES,
+        payload: null
+      })
+    }
+  };
+};
 
 // Delete profile (DELETES USER AND PROFILE!)
 export const deleteAccount = () => {
