@@ -36,6 +36,25 @@ export const getCurrentProfile = () => {
   }
 }
 
+// Get profile by handle
+export const getProfileByHandle = handle => {
+  return async dispatch => {
+    dispatch(setProfileLoading());
+    try {
+      const res = await axios.get(`/api/profile/handle/${handle}`);
+      dispatch({
+        type: GET_PROFILE,
+        payload: res.data
+      });
+    } catch (err) { // catch - user nie ma jeszcze zalozonego profilu, pusty payload
+      dispatch({
+        type: GET_PROFILE,
+        payload: null
+      });
+    }
+  }
+}
+
 // Create profile
 export const createProfile = (profileData, history) => {
   return async dispatch => {
