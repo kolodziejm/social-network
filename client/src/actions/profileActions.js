@@ -81,6 +81,26 @@ export const addEducation = (eduData, history) => {
   };
 };
 
+// Delete experience
+export const deleteExperience = id => {
+  return async dispatch => {
+    try {
+      const res = await axios.delete(`/api/profile/experience/${id}`);
+      console.log(res);
+      dispatch({
+        type: GET_PROFILE,
+        payload: res.data.profile
+      })
+    } catch (err) {
+      dispatch({
+        type: GET_ERRORS,
+        payload: err.response.data
+      })
+    }
+  };
+};
+
+
 // Delete profile (DELETES USER AND PROFILE!)
 export const deleteAccount = () => {
   return async dispatch => {
