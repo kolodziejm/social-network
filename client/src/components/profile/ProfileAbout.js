@@ -22,7 +22,9 @@ class ProfileAbout extends Component {
             <hr />
             <h3 className="text-center text-info">Skill Set</h3>
             <div className="row">
-              {skills}
+              <div className="d-flex flex-wrap justify-content-center align-items-center">
+                {skills}
+              </div>
             </div>
           </div>
         </div>
@@ -31,6 +33,8 @@ class ProfileAbout extends Component {
   }
 }
 
-
+ProfileAbout.propTypes = {
+  profile: PropTypes.object.isRequired
+};
 
 export default ProfileAbout;
