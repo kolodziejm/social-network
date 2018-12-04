@@ -7,3 +7,9 @@ export const CLEAR_CURRENT_PROFILE = 'CLEAR_CURRENT_PROFILE';
 export const GET_PROFILES = 'GET_PROFILES';
 export const ADD_EXPERIENCE = 'ADD_EXPERIENCE';
 export const ADD_EDUCATION = 'ADD_EDUCATION';
+export const POST_LOADING = 'POST_LOADING';
+export const GET_POSTS = 'GET_POSTS';
+export const GET_POST = 'GET_POST';
+export const ADD_POST = 'ADD_POST';
+export const DELETE_POST = 'DELETE_POST';
+
