@@ -1,9 +1,10 @@
 import axios from 'axios';
 
-import { ADD_POST, GET_POSTS, GET_ERRORS, POST_LOADING, DELETE_POST, GET_POST } from './types';
+import { ADD_POST, GET_POSTS, GET_ERRORS, POST_LOADING, DELETE_POST, GET_POST, CLEAR_ERRORS } from './types';
 
 export const addPost = postData => {
   return async dispatch => {
+    dispatch(clearErrors);
     try {
       const res = await axios.post('/api/posts', postData);
       dispatch({
@@ -100,10 +101,51 @@ export const removeLike = id => {
   }
 }
 
+export const addComment = (postId, commentData) => {
+  return async dispatch => {
+    dispatch(clearErrors);
+    try {
+      const res = await axios.post(`/api/posts/comment/${postId}`, commentData);
+      dispatch({
+        type: GET_POST,
+        payload: res.data
+      })
+    } catch (err) {
+      dispatch({
+        type: GET_ERRORS,
+        payload: err.response.data
+      })
+    }
+  }
+}
+
+export const deleteComment = (postId, commentId) => {
+  return async dispatch => {
+    try {
+      const res = await axios.delete(`/api/posts/comment/${postId}/${commentId}`);
+      dispatch({
+        type: GET_POST,
+        payload: res.data
+      })
+    } catch (err) {
+      dispatch({
+        type: GET_ERRORS,
+        payload: err.response.data
+      })
+    }
+  }
+}
 
 // SET LOADING STATE
 export const setPostLoading = () => {
   return {
     type: POST_LOADING
+  }
+}
+
+// CLEAR ERRORS
+export const clearErrors = () => {
+  return {
+    type: CLEAR_ERRORS
   }
 }
